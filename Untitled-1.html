@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yara's Heaven</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #0d0d0d;
+      color: #fff;
+    }
+    header {
+      background: #1a1a1a;
+      color: #ff0000;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+    header span.logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    header span.logo-icon {
+      font-size: 1.8rem;
+      color: #ff0000;
+    }
+    main {
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .upload-section, .mods-list {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+    h2 {
+      color: #ff0000;
+      margin-top: 0;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+    }
+    input, textarea, select {
+      background: #262626;
+      color: #fff;
+    }
+    button {
+      background: #ff0000;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #cc0000;
+    }
+    .mod-card {
+      background: #262626;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    .mod-info {
+      max-width: 70%;
+    }
+    .mod-info h3 {
+      margin: 0 0 5px 0;
+      color: #ff0000;
+    }
+    .actions button {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="logo">
+      <span class="logo-icon">🎮</span>
+      Yara's Heaven
+    </span>
+  </header>
+  <main>
+    <section class="upload-section">
+      <h2>Upload Mod</h2>
+      <input type="text" id="modTitle" placeholder="Mod Title">
+      <input type="text" id="modCategory" placeholder="Category">
+      <input type="text" id="modVersion" placeholder="Version">
+      <textarea id="modDesc" placeholder="Description"></textarea>
+      <input type="file" id="modFile">
+      <button onclick="uploadMod()">Upload</button>
+    </section>
+    <section class="mods-list">
+      <h2>Mods</h2>
+      <div id="modsContainer"></div>
+    </section>
+  </main>
+  <script>
+    let mods = [
+      {title: "PUBG Mobile", category: "Battle Royale", version: "2.9.0", desc: "Popular battle royale shooter with intense matches.", url: "#"},
+      {title: "Free Fire", category: "Battle Royale", version: "1.102.1", desc: "Fast-paced battle royale game with unique characters.", url: "#"},
+      {title: "Clash of Clans", category: "Strategy", version: "16.137.9", desc: "Build your village, raise a clan, and compete in epic wars!", url: "#"},
+      {title: "Minecraft PE", category: "Sandbox", version: "1.20.31", desc: "Create, explore, and survive in your own blocky world.", url: "#"},
+      {title: "Call of Duty Mobile", category: "Shooter", version: "1.0.41", desc: "Iconic FPS franchise with battle royale and multiplayer.", url: "#"},
+      {title: "Among Us", category: "Party", version: "2023.11.28", desc: "Find the impostor in this social deduction hit!", url: "#"},
+      {title: "Genshin Impact", category: "RPG", version: "4.1.0", desc: "Explore Teyvat, fight bosses, and unlock characters.", url: "#"},
+      {title: "Candy Crush Saga", category: "Puzzle", version: "1.275.0", desc: "Match-3 puzzle game with hundreds of levels.", url: "#"},
+      {title: "Asphalt 9: Legends", category: "Racing", version: "4.3.0", desc: "Arcade racing game with stunning graphics and cars.", url: "#"},
+      {title: "Subway Surfers", category: "Arcade", version: "3.21.0", desc: "Run, dodge, and surf trains in endless fun.", url: "#"},
+      {title: "Temple Run 2", category: "Arcade", version: "1.104.0", desc: "Escape the temple in this endless running classic.", url: "#"},
+      {title: "Fortnite Mobile", category: "Battle Royale", version: "28.01.0", desc: "Build, shoot, and survive in Epic Games' hit battle royale.", url: "#"},
+      {title: "Pokémon GO", category: "Adventure", version: "0.289.0", desc: "Catch Pokémon in the real world using AR!", url: "#"},
+      {title: "FIFA Mobile", category: "Sports", version: "2024.0.1", desc: "Football simulation with ultimate team and live events.", url: "#"},
+      {title: "Roblox", category: "Sandbox", version: "2.605.694", desc: "Play and create millions of user-generated worlds.", url: "#"}
+    ];
+
+    function uploadMod() {
+      const title = document.getElementById('modTitle').value;
+      const category = document.getElementById('modCategory').value;
+      const version = document.getElementById('modVersion').value;
+      const desc = document.getElementById('modDesc').value;
+      const fileInput = document.getElementById('modFile');
+      if (!title || !fileInput.files[0]) {
+        alert('Please add a title and file.');
+        return;
+      }
+      const file = fileInput.files[0];
+      const url = URL.createObjectURL(file);
+      const mod = {title, category, version, desc, url};
+      mods.push(mod);
+      renderMods();
+      document.getElementById('modTitle').value = '';
+      document.getElementById('modCategory').value = '';
+      document.getElementById('modVersion').value = '';
+      document.getElementById('modDesc').value = '';
+      fileInput.value = '';
+    }
+
+    function renderMods() {
+      const container = document.getElementById('modsContainer');
+      container.innerHTML = '';
+      mods.forEach((mod, index) => {
+        const div = document.createElement('div');
+        div.className = 'mod-card';
+        div.innerHTML = `
+          <div class="mod-info">
+            <h3>${mod.title}</h3>
+            <p><strong>Category:</strong> ${mod.category || 'N/A'}</p>
+            <p><strong>Version:</strong> ${mod.version || 'N/A'}</p>
+            <p>${mod.desc || ''}</p>
+          </div>
+          <div class="actions">
+            <a href="${mod.url}" download="${mod.title}.apk">
+              <button>Download</button>
+            </a>
+            <button onclick="deleteMod(${index})">Delete</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function deleteMod(index) {
+      mods.splice(index, 1);
+      renderMods();
+    }
+
+    renderMods();
+  </script>
+</body>
+</html>
